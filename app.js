@@ -1,24 +1,23 @@
 require('dotenv').config();
 require('express-async-errors');
-const express = require("express");
+
+const express = require('express');
 const app = express();
 
-//displayed html
-app.get("/", function(req,res){
-    res.sendFile(__dirname + "/signup.html");
-})
 
-//middleware
-app.use(express.static("public"));
-app.use(express.json());
-// app.use()
-
-//route
 const mainRoute = require("./routes/router");
-app.use('/api/v1', mainRoute);
+const notFoundMiddleware = require('./middleware/not-found');
+const errorHandlerMiddleware = require('./middleware/error-handler');
 
+// middleware
+app.use(express.static('./public'));
+app.use(express.json());
 
-//to start the server
+app.use("/api/v1", mainRoute);
+
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
+
 const port = process.env.PORT || 3000;
 
 const start = async () => {
